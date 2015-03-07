@@ -9,13 +9,13 @@ angular.module('module.welcome', [
 
         $stateProvider.state('welcome',{
             url:'/welcome',
-            templateUrl:'modules/welcome/welcome.tpl.html',
+            templateUrl:'../app/modules/welcome/welcome.tpl.html',
             controller:'WelcomePageController as wpController'
         })
 
     })
 
-    .controller(function () {
+    .controller('WelcomePageController',function () {
         var wpController = this;
 
         wpController.title = 'Welcome Page';

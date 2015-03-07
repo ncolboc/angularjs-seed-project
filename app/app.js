@@ -1,9 +1,10 @@
 /**
  * Created by macfly on 7/03/2015.
  */
-angular.module('mainModule', [
+angular.module('main', [
     'ui.router',
-    'module.welcome'
+    'module.welcome',
+    'templates-main'
 ])
 
     .config(function($stateProvider,$urlRouterProvider){
