@@ -11,7 +11,7 @@ angular.module('module.welcome', [
             url:'/welcome',
             templateUrl:'../app/modules/welcome/welcome.tpl.html',
             controller:'WelcomePageController as wpController'
-        })
+        });
 
     })
 

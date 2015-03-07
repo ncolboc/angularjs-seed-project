@@ -1,0 +1,25 @@
+{
+  "unused": true,
+  "undef": true,
+  "curly": false,
+  "eqeqeq": true,
+  "immed": true,
+  "latedef": false,
+  "newcap": true,
+  "noarg": true,
+  "sub": true,
+  "boss": true,
+  "eqnull": true,
+  "debug": false,
+  "browser": true,
+  "jquery": true,
+  "devel": false,
+  "globals": {
+    "angular": true,
+    "_": true,
+    "moment": true,
+    "Spinner": true,
+    "module":true
+  },
+  "force": true
+}

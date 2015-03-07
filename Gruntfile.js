@@ -89,6 +89,21 @@ module.exports = function (grunt) {
         },
 
         /*
+         grunt-ng-annotate task
+         */
+        ngAnnotate: {
+            main: {
+                files: [
+                    {
+                        expand:true,
+                        src: ['build/*.js'],
+                        dest: ''
+                    }
+                ]
+            }
+        },
+
+        /*
          grunt-contrib-watch task
          */
         watch: {
@@ -135,7 +150,9 @@ module.exports = function (grunt) {
         'concat:js',
         //6) convert template html to angular module
         'html2js:main',
-        //7) copy index.html
+        //7) apply annotation to js files
+        'ngAnnotate:main',
+        //8) copy index.html
         'copy:app_index'
-    ])
+    ]);
 };

@@ -11,7 +11,6 @@ angular.module('main', [
 
         //default redirect to welcome page
         $urlRouterProvider.otherwise('/welcome');
-
     })
 
 ;
