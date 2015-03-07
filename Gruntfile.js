@@ -6,7 +6,6 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-copy');
-    grunt.loadNpmTasks('grunt-copy-bower');
     grunt.loadNpmTasks('grunt-bowercopy');
     grunt.loadNpmTasks('grunt-contrib-compress');
     grunt.loadNpmTasks('grunt-contrib-connect');
@@ -27,14 +26,21 @@ module.exports = function (grunt) {
         },
 
         /*
-         grunt-copy-bower task
+         grunt-bowercopy task
          */
         bowercopy: {
             options: {
                 destPrefix: 'build\\vendor'
             },
             js: {
-                src: ['angular:main', 'jquery:main', 'ui-router:main', 'underscore:main', 'bootstrap/dist/js/bootstrap.js'],
+                src: [
+                    'jquery:main',
+                    'angular:main',
+                    'angular-animate:main',
+                    'ui-router:main',
+                    'underscore:main',
+                    'bootstrap/dist/js/bootstrap.js'
+                ],
                 dest: '\\'
             },
             css: {
@@ -60,9 +66,37 @@ module.exports = function (grunt) {
          grunt-contrib-copy task
          */
         copy: {
-            index: {
+            app_index: {
                 src: 'app/index.html',
                 dest: 'build/index.html'
+            },
+            app_css:{
+                src:'app/css/*.css',
+                dest:'build/style/',
+                flatten: true,
+                expand:true
+            }
+        },
+
+        /*
+         grunt-contrib-connect task
+         */
+        html2js:{
+            main: {
+                src: ['app/**/*.tpl.html'],
+                dest: 'build/app.tpls.js'
+            }
+        },
+
+        /*
+         grunt-contrib-watch task
+         */
+        watch: {
+            files: ['app/**/*'],
+            tasks: ['package'],
+            options: {
+                interrupt: true,
+                debounceDelay: 250
             }
         },
 
@@ -74,8 +108,7 @@ module.exports = function (grunt) {
                 options: {
                     base:'build',
                     hostname: 'localhost',
-                    port: 8111,
-                    keepalive:true
+                    port: 8111
                 }
             }
         }
@@ -83,7 +116,8 @@ module.exports = function (grunt) {
 
     grunt.registerTask('serve', [
         'package',
-        'connect:server'
+        'connect:server',
+        'watch'
     ]),
 
     // Loading of tasks and registering tasks will be written here
@@ -95,9 +129,13 @@ module.exports = function (grunt) {
         'bowercopy:js',
         //3) copy css files from bower repo
         'bowercopy:css',
-        //4) concat all js files into app.js
+        //4) copy app css files
+        'copy:app_css',
+        //5) concat all js files into app.js
         'concat:js',
-        //5) copy index.html
-        'copy:index'
+        //6) convert template html to angular module
+        'html2js:main',
+        //7) copy index.html
+        'copy:app_index'
     ])
 };
