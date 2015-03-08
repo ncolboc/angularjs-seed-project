@@ -3,6 +3,7 @@
  */
 angular.module('main', [
     'ui.router',
+    'module.constants',
     'module.welcome',
     'templates-main'
 ])
@@ -11,6 +12,11 @@ angular.module('main', [
 
         //default redirect to welcome page
         $urlRouterProvider.otherwise('/welcome');
+    })
+
+    .controller('MainController', function (APP_NAME) {
+        var mainController = this;
+        mainController.appName = APP_NAME;
     })
 
 ;

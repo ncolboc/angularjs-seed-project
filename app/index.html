@@ -8,12 +8,12 @@
     <link rel="stylesheet" href="style/site.css"/>
     <link rel="stylesheet" href="style/font-awesome.css"/>
 </head>
-<body>
+<body ng-controller="MainController as mainController">
 
 <header class="navbar navbar-default navbar-fixed-top navbar-inverse">
     <div class="container">
         <div class="navbar-header">
-            <a href="#/" class="navbar-brand">Demo3 site</a></span>
+            <a href="#/" class="navbar-brand">{{mainController.appName}}</a></span>
         </div>
         <ul class="nav navbar-nav navbar-right ">
             <li class="dropdown">

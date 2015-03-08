@@ -14,15 +14,23 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-html2js');
     grunt.loadNpmTasks('grunt-ng-annotate');
+    grunt.loadNpmTasks('grunt-font-awesome-vars');
+    grunt.loadNpmTasks('grunt-contrib-less');
 
     grunt.initConfig({
+
         pkg: grunt.file.readJSON('package.json'),
+
+        globalConfig:{
+          pkg_folder:'build',
+          app_src:'app'
+        },
 
         /*
          grunt-contrib-clean task
          */
         clean: {
-            build: 'build'
+            package: '<%= globalConfig.pkg_folder %>'
         },
 
         /*
@@ -30,7 +38,7 @@ module.exports = function (grunt) {
          */
         bowercopy: {
             options: {
-                destPrefix: 'build\\vendor'
+                destPrefix: '<%= globalConfig.pkg_folder %>\\vendor'
             },
             js: {
                 src: [
@@ -39,16 +47,51 @@ module.exports = function (grunt) {
                     'angular-animate:main',
                     'ui-router:main',
                     'underscore:main',
+                    'moment:main',
+                    'angular-strap:main',
                     'bootstrap/dist/js/bootstrap.js'
                 ],
                 dest: '\\'
             },
             css: {
                 options: {
-                    destPrefix: 'build\\style'
+                    destPrefix: '<%= globalConfig.pkg_folder %>\\style'
                 },
-                src: ['bootstrap/dist/css/bootstrap.css', 'fontawesome/css/font-awesome.css'],
+                src: ['bootstrap/dist/css/bootstrap.css'],
                 dest: '\\'
+            },
+            font:{
+                options: {
+                    destPrefix: '<%= globalConfig.pkg_folder %>\\assets\\fonts\\font-awesome'
+                },
+                src: ['fontawesome/fonts/*'],
+                dest: '\\'
+            }
+        },
+
+        /*
+         grunt-font-awesome-vars task
+         */
+        fontAwesomeVars: {
+            main: {
+                variablesLessPath: 'lib/fontawesome/less/variables.less',
+                fontPath: '../assets/fonts/font-awesome'        //NOTE: this must be relative to FINAL, compiled .css file - NOT the variables.less file! For example, this would be the correct path if the compiled css file is main.css which is in 'src/build' and the font awesome font is in 'src/bower_components/font-awesome/fonts' - since to get from main.css to the fonts directory, you first go back a directory then go into bower_components > font-awesome > fonts.
+            }
+        },
+
+        /*
+         grunt-contrib-less task
+         */
+        less:{
+            build: {
+                files: [
+                    {'<%= globalConfig.pkg_folder %>/style/font-awesome.css': ['lib/fontawesome/less/font-awesome.less']}
+                ],
+                options: {
+                    compile: true,
+                    strictMath: true,
+                    strictUnits: true
+                }
             }
         },
 
@@ -57,8 +100,8 @@ module.exports = function (grunt) {
          */
         concat: {
             js: {
-                src: ['app/**/*.js'],
-                dest: 'build/app.js'
+                src: ['<%= globalConfig.app_src %>/**/*.js'],
+                dest: '<%= globalConfig.pkg_folder %>/app.js'
             }
         },
 
@@ -67,12 +110,12 @@ module.exports = function (grunt) {
          */
         copy: {
             app_index: {
-                src: 'app/index.html',
-                dest: 'build/index.html'
+                src: '<%= globalConfig.app_src %>/index.html',
+                dest: '<%= globalConfig.pkg_folder %>/index.html'
             },
             app_css:{
-                src:'app/css/*.css',
-                dest:'build/style/',
+                src:'<%= globalConfig.app_src %>/css/*.css',
+                dest:'<%= globalConfig.pkg_folder %>/style/',
                 flatten: true,
                 expand:true
             }
@@ -83,8 +126,8 @@ module.exports = function (grunt) {
          */
         html2js:{
             main: {
-                src: ['app/**/*.tpl.html'],
-                dest: 'build/app.tpls.js'
+                src: ['<%= globalConfig.app_src %>/**/*.tpl.html'],
+                dest: '<%= globalConfig.pkg_folder %>/app.tpls.js'
             }
         },
 
@@ -96,7 +139,7 @@ module.exports = function (grunt) {
                 files: [
                     {
                         expand:true,
-                        src: ['build/*.js'],
+                        src: ['<%= globalConfig.pkg_folder %>/*.js'],
                         dest: ''
                     }
                 ]
@@ -107,7 +150,7 @@ module.exports = function (grunt) {
          grunt-contrib-watch task
          */
         watch: {
-            files: ['app/**/*'],
+            files: ['<%= globalConfig.app_src %>/**/*','Gruntfile.js'],
             tasks: ['package'],
             options: {
                 interrupt: true,
@@ -121,7 +164,7 @@ module.exports = function (grunt) {
         connect:{
             server:{
                 options: {
-                    base:'build',
+                    base:'<%= globalConfig.pkg_folder %>',
                     hostname: 'localhost',
                     port: 8111
                 }
@@ -138,21 +181,27 @@ module.exports = function (grunt) {
     // Loading of tasks and registering tasks will be written here
     grunt.registerTask('package', [
 
-        //1) delete build directory
-        'clean:build',
+        //1) delete <%= globalConfig.pkg_folder %> directory
+        'clean:package',
         //2) copy javascript libraries from bower repo
         'bowercopy:js',
         //3) copy css files from bower repo
         'bowercopy:css',
-        //4) copy app css files
+        //4) copy css files from bower repo
+        'bowercopy:font',
+        //5) replace font-path in fontawesome file variables.less
+        'fontAwesomeVars:main',
+        //6) apply less process
+        'less:build',
+        //7) copy app css files
         'copy:app_css',
-        //5) concat all js files into app.js
+        //8) concat all js files into app.js
         'concat:js',
-        //6) convert template html to angular module
+        //9) convert template html to angular module
         'html2js:main',
-        //7) apply annotation to js files
+        //10) apply annotation to js files
         'ngAnnotate:main',
-        //8) copy index.html
+        //11) copy index.html
         'copy:app_index'
     ]);
 };
