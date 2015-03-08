@@ -13,28 +13,12 @@
 <header class="navbar navbar-default navbar-fixed-top navbar-inverse">
     <div class="container">
         <div class="navbar-header">
-            <a href="#/" class="navbar-brand">{{mainController.appName}}</a></span>
+            <a href="#/" class="navbar-brand">
+                <span class="glyphicon glyphicon-menu-right" aria-hidden="true"></span>
+                {{'app.title' | translate}} ({{mainController.appVersion}})</a>
         </div>
         <ul class="nav navbar-nav navbar-right ">
-            <li class="dropdown">
-                <a href="" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Samples
-                    <span class="caret"></span></a>
-                <ul class="dropdown-menu" role="menu">
-                    <li role="presentation" class="dropdown-header">Cross-Origin</li>
-                    <li>
-                        <a ui-sref="cross-origin.expressjs">XHR with express.js</a>
-                        <a ui-sref="cross-origin.flickr">Flickr - Photo Sharing Demo</a>
-                    </li>
-                    <li role="presentation" class="dropdown-header">Routing</li>
-                    <li>
-                        <a ui-sref="ui-router.categories">UI-Router</a>
-                    </li>
-                </ul>
-            </li>
-            <li><a href="#"><i class="fa fa-automobile"></i> About</a></li>
-            <li><a href="#"><i class="fa fa-automobile"></i> User</a></li>
-            <li><a href="#"><i class="fa fa-automobile"></i> Info</a></li>
-
+            <li><a href="#"><i class="fa fa-question"></i> About</a></li>
         </ul>
     </div>
 </header>
@@ -52,6 +36,8 @@
 <script src="vendor/bootstrap.js"></script>
 <script src="vendor/underscore.js"></script>
 <script src="vendor/angular-ui-router.js"></script>
+<script src="vendor/angular-translate.js"></script>
+<script src="vendor/angular-translate-loader-static-files.js"></script>
 <!--<script src="../node_modules/angular-hint/dist/hint.js"></script>-->
 <script src="app.js"></script>
 <script src="app.tpls.js"></script>

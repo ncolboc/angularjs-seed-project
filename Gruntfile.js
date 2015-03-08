@@ -14,16 +14,15 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-html2js');
     grunt.loadNpmTasks('grunt-ng-annotate');
-    grunt.loadNpmTasks('grunt-font-awesome-vars');
     grunt.loadNpmTasks('grunt-contrib-less');
 
     grunt.initConfig({
 
         pkg: grunt.file.readJSON('package.json'),
 
-        globalConfig:{
-          pkg_folder:'build',
-          app_src:'app'
+        globalConfig: {
+            pkg_folder: 'dist',
+            app_src: 'app'
         },
 
         /*
@@ -49,6 +48,8 @@ module.exports = function (grunt) {
                     'underscore:main',
                     'moment:main',
                     'angular-strap:main',
+                    'angular-translate:main',
+                    'angular-translate-loader-static-files:main',
                     'bootstrap/dist/js/bootstrap.js'
                 ],
                 dest: '\\'
@@ -60,12 +61,14 @@ module.exports = function (grunt) {
                 src: ['bootstrap/dist/css/bootstrap.css'],
                 dest: '\\'
             },
-            font:{
+            font: {
                 options: {
-                    destPrefix: '<%= globalConfig.pkg_folder %>\\assets\\fonts\\font-awesome'
+                    destPrefix: '<%= globalConfig.pkg_folder %>/assets/fonts/'
                 },
-                src: ['fontawesome/fonts/*'],
-                dest: '\\'
+                files: {
+                    'font-awesome': 'fontawesome/fonts/*',
+                    'glyphicons': 'bootstrap/fonts/*'
+                }
             }
         },
 
@@ -82,15 +85,29 @@ module.exports = function (grunt) {
         /*
          grunt-contrib-less task
          */
-        less:{
-            build: {
-                files: [
-                    {'<%= globalConfig.pkg_folder %>/style/font-awesome.css': ['lib/fontawesome/less/font-awesome.less']}
-                ],
+        less: {
+            fontawesome: {
                 options: {
-                    compile: true,
-                    strictMath: true,
-                    strictUnits: true
+                    paths: ["lib/fontawesome/less/"],
+
+                    modifyVars: {
+                        "fa-font-path": '"../assets/fonts/font-awesome"'
+                    }
+                },
+                files: {
+                    '<%= globalConfig.pkg_folder %>/style/font-awesome.css': 'lib/fontawesome/less/font-awesome.less',
+                }
+            },
+            bootstrap: {
+                options: {
+                    paths: ["lib/bootstrap/less/"],
+
+                    modifyVars: {
+                        'icon-font-path': '"../assets/fonts/glyphicons/"'
+                    }
+                },
+                files: {
+                    '<%= globalConfig.pkg_folder %>/style/bootstrap.css': 'lib/bootstrap/less/bootstrap.less'
                 }
             }
         },
@@ -113,18 +130,30 @@ module.exports = function (grunt) {
                 src: '<%= globalConfig.app_src %>/index.html',
                 dest: '<%= globalConfig.pkg_folder %>/index.html'
             },
-            app_css:{
-                src:'<%= globalConfig.app_src %>/css/*.css',
-                dest:'<%= globalConfig.pkg_folder %>/style/',
+            app_css: {
+                src: '<%= globalConfig.app_src %>/css/*.css',
+                dest: '<%= globalConfig.pkg_folder %>/style/',
                 flatten: true,
-                expand:true
+                expand: true
+            },
+            app_assets: {
+                src: '<%= globalConfig.app_src %>/assets/i18n/*.json',
+                dest: '<%= globalConfig.pkg_folder %>/assets/i18n/',
+                flatten: true,
+                expand: true
+            },
+            app_img: {
+                src: '<%= globalConfig.app_src %>/assets/img/*',
+                dest: '<%= globalConfig.pkg_folder %>/assets/img/',
+                flatten: true,
+                expand: true
             }
         },
 
         /*
          grunt-contrib-connect task
          */
-        html2js:{
+        html2js: {
             main: {
                 src: ['<%= globalConfig.app_src %>/**/*.tpl.html'],
                 dest: '<%= globalConfig.pkg_folder %>/app.tpls.js'
@@ -138,7 +167,7 @@ module.exports = function (grunt) {
             main: {
                 files: [
                     {
-                        expand:true,
+                        expand: true,
                         src: ['<%= globalConfig.pkg_folder %>/*.js'],
                         dest: ''
                     }
@@ -150,7 +179,7 @@ module.exports = function (grunt) {
          grunt-contrib-watch task
          */
         watch: {
-            files: ['<%= globalConfig.app_src %>/**/*','Gruntfile.js'],
+            files: ['<%= globalConfig.app_src %>/**/*', 'Gruntfile.js'],
             tasks: ['package'],
             options: {
                 interrupt: true,
@@ -161,10 +190,10 @@ module.exports = function (grunt) {
         /*
          grunt-contrib-connect task
          */
-        connect:{
-            server:{
+        connect: {
+            server: {
                 options: {
-                    base:'<%= globalConfig.pkg_folder %>',
+                    base: '<%= globalConfig.pkg_folder %>',
                     hostname: 'localhost',
                     port: 8111
                 }
@@ -178,30 +207,35 @@ module.exports = function (grunt) {
         'watch'
     ]),
 
-    // Loading of tasks and registering tasks will be written here
-    grunt.registerTask('package', [
+        // Loading of tasks and registering tasks will be written here
+        grunt.registerTask('package', [
 
-        //1) delete <%= globalConfig.pkg_folder %> directory
-        'clean:package',
-        //2) copy javascript libraries from bower repo
-        'bowercopy:js',
-        //3) copy css files from bower repo
-        'bowercopy:css',
-        //4) copy css files from bower repo
-        'bowercopy:font',
-        //5) replace font-path in fontawesome file variables.less
-        'fontAwesomeVars:main',
-        //6) apply less process
-        'less:build',
-        //7) copy app css files
-        'copy:app_css',
-        //8) concat all js files into app.js
-        'concat:js',
-        //9) convert template html to angular module
-        'html2js:main',
-        //10) apply annotation to js files
-        'ngAnnotate:main',
-        //11) copy index.html
-        'copy:app_index'
-    ]);
+            //1) delete <%= globalConfig.pkg_folder %> directory
+            'clean:package',
+            //2) copy javascript libraries from bower repo
+            'bowercopy:js',
+            //3) copy css files from bower repo
+            'bowercopy:css',
+            //4) copy css files from bower repo
+            'bowercopy:font',
+            //5) replace font-path in fontawesome file variables.less
+            //'fontAwesomeVars:main',
+            //6) apply less process
+            'less:fontawesome',
+            'less:bootstrap',
+            //7) copy app css files
+            'copy:app_css',
+            //8) copy i18n translation file
+            'copy:app_assets',
+            //9) copy imgs
+            'copy:app_img',
+            //10) concat all js files into app.js
+            'concat:js',
+            //11) convert template html to angular module
+            'html2js:main',
+            //12) apply annotation to js files
+            'ngAnnotate:main',
+            //13) copy index.html
+            'copy:app_index'
+        ]);
 };
