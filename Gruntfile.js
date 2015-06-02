@@ -15,7 +15,10 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-html2js');
     grunt.loadNpmTasks('grunt-ng-annotate');
     grunt.loadNpmTasks('grunt-contrib-less');
-
+    grunt.loadNpmTasks('grunt-ng-constant');
+    
+    grunt.option('target', grunt.option('target') || 'dev');
+    
     grunt.initConfig({
 
         pkg: grunt.file.readJSON('package.json'),
@@ -31,7 +34,29 @@ module.exports = function (grunt) {
         clean: {
             package: '<%= globalConfig.pkg_folder %>'
         },
-
+        
+        /*
+         grunt-ng-constant task
+         */
+        ngconstant: {
+            options: {
+                name: 'module.constants',
+                dest: '<%= globalConfig.pkg_folder %>/config/constants.js',
+                constants: grunt.file.readJSON('app/common/config/constants.json')
+            },
+            dev: {
+                constants:{
+                    debugInfoEnabled:true
+                }
+            }
+            ,
+            prd: {
+                constants:{
+                    debugInfoEnabled:false
+                }
+            }
+        },
+        
         /*
          grunt-bowercopy task
          */
@@ -117,7 +142,7 @@ module.exports = function (grunt) {
          */
         concat: {
             js: {
-                src: ['<%= globalConfig.app_src %>/**/*.md.js','<%= globalConfig.app_src %>/**/*.js'],
+                src: ['<%= globalConfig.app_src %>/**/*.md.js','<%= globalConfig.app_src %>/**/*.js','!<%= globalConfig.app_src %>/common/config/*.js'],
                 dest: '<%= globalConfig.pkg_folder %>/app.js'
             }
         },
@@ -229,6 +254,8 @@ module.exports = function (grunt) {
             'copy:app_assets',
             //9) copy imgs
             'copy:app_img',
+            //10) create module constants
+            'ngconstant:' + grunt.option('target'),
             //10) concat all js files into app.js
             'concat:js',
             //11) convert template html to angular module
