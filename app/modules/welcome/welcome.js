@@ -1,9 +1,7 @@
 /**
  * Created by macfly on 6/03/2015.
  */
-angular.module('module.welcome', [
-
-])
+angular.module('module.welcome')
 
     .config(function ($stateProvider) {
 
@@ -15,10 +13,14 @@ angular.module('module.welcome', [
 
     })
 
-    .controller('WelcomePageController',function () {
+    .controller('WelcomePageController',function (welcomeVmService,$scope) {
         var wpController = this;
-
-        wpController.title = 'Welcome Page';
+        welcomeVmService.initialize(wpController);
+        
+        $scope.$on("$destroy", function() {
+            
+        });
+        
     })
 
 ;

@@ -117,7 +117,7 @@ module.exports = function (grunt) {
          */
         concat: {
             js: {
-                src: ['<%= globalConfig.app_src %>/**/*.js'],
+                src: ['<%= globalConfig.app_src %>/**/*.md.js','<%= globalConfig.app_src %>/**/*.js'],
                 dest: '<%= globalConfig.pkg_folder %>/app.js'
             }
         },
