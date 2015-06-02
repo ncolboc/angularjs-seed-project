@@ -1,18 +1,18 @@
-angular.module('module.welcome').factory('welcomeVmService',function () {
-	
+angular.module('module.welcome').factory('welcomeVmService', function () {
+
 	var welcomeVm = null;
-	
-	function WelcomeVm(){
+
+	function WelcomeVm() {
 		this.title = 'Welcome Page';
 	}
-	
+
 	return {
-		
-		initialize:function (vm) {
+
+		initialize: function (vm) {
 			welcomeVm = vm;
-			angular.extend(welcomeVm,new WelcomeVm());
+			angular.extend(welcomeVm, new WelcomeVm());
 		}
-		
+
 	};
-	
+
 });
